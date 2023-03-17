@@ -58,24 +58,22 @@ def findMinimalProductSum(n):
     '''
     Find all a minimal product number for each k in 2<=k<=n
     '''
-    def recur(min, number, currentSum, depth):
-        for i in range(min, maxProduct):
-            if number * i <=  maxProduct:
-                sequence[depth] = i
-                product=number*i
-                if depth>=1:        
+    
+    def recur(product, number, currentSum, depth):
+        #for i in range(product, maxProduct):
+        for i in range(product, maxProduct//number+1):
+                if depth>=1:      
+                    product=number*i  
                     # result.append(createProductSumSequence(sequence[0:depth+1],depth))
                     numFactors = depth + 1 + (product) - (currentSum+i)
                     if numFactors not in dictionary: 
                         dictionary[numFactors] = product
                     else:
-                        if(dictionary[numFactors]>product):
-                            dictionary[numFactors] = product
+                        dictionary[numFactors]=min(dictionary[numFactors],product)
                 recur(i,number*i,currentSum+i, depth+1)
             
     #최대 
     maxProduct = n**2
-    sequence = [0 for _ in range(maxProduct)]
     result=[]
     dictionary = {}   # (key,value) = (# of factors (k), minimal product-sum number found so far)
     recur(2,1,0,0)
@@ -83,7 +81,28 @@ def findMinimalProductSum(n):
     for i in range(2,n+1):
         result.append(dictionary[i])
     return result
-  
+    '''
+    def recur(product,prevNumber,currentSum,depth):
+        if depth>=2 and product>=currentSum:
+            numFactors=depth+product-currentSum
+            if numFactors not in dictionary: dictionary[numFactors]=product
+            else:
+                if dictionary[numFactors]>product:
+                    dictionary[numFactors]=product
+        for i in range(prevNumber,maxProduct//product+1):
+            recur(product*i,i,currentSum+i,depth+1)
+
+
+    maxProduct=n**2
+    dictionary={}
+    for number in range(2,maxProduct+1):
+        recur(number,number,number,1)
+    result=[]
+    for i in range(2,n+1):
+        result.append(dictionary[i])
+
+    return result
+    '''
 
 #n=4
 def findMinimalProductSumDivision(n):
