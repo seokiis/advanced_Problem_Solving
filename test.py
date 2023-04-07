@@ -1,99 +1,88 @@
-import timeit
+import math
 
 
-def findPrimes(maxN):
-    '''
-    Find all primes <= maxN and return them in a list
-    '''
-    prime = [True for _ in range(maxN+1)]
-    prime[0] = prime[1] = False
-    p = 2
-    while p*p <= maxN:
-        if prime[p]:
-            prime[p*p::p] = [False] * ((maxN - p*p) // p + 1)
-        p += 1
-
-    # result = []
-    # for i in range(len(prime)):
-    #     if prime[i]:
-    #         result.append(i)
-
-    return prime
-
-
-def binarySearchEQ(numbers, target):
-    '''
-    Find target in the list numbers
-    If the target exists in the list, return its index. Otherwise, return -1
-    '''
-    def recur(fromIndex, toIndex):
-        if fromIndex > toIndex:
-            return toIndex
-
-        mid = int((fromIndex+toIndex)/2)
-        if numbers[mid] < target:
-            return recur(mid+1, toIndex)
-        elif numbers[mid] > target:
-            return recur(fromIndex, mid-1)
-        else:
-            return mid - 1
-
-    return recur(0, len(numbers)-1)
-
-
-def findLongestConsecutivePrimeSum(*sums):
-    maxSum = max(sums)
-    # 소수 구하기 [true,false]로 이루어짐. **index 0부터임**
-    primeArr = findPrimes(maxSum)
-
-    # print("primeArr:", primeArr)
-
-    # true만 모음.
+def primeFactorization(n):
     result = []
-    for i in range(2, len(primeArr)):
-        if primeArr[i]:
-            result.append(i)
 
-    # print("result", result)
+    if n % 2 == 0:  # Check to see if 2 is a prime factor
+        while n % 2 == 0:
+            n /= 2
+            result.append(2)
 
-    primeSumFirstRow = []
-    sum = 0
-    for p in range(maxSum):
-        if primeArr[p]:
-            sum += p
-            primeSumFirstRow.append(sum)
+    p = 3  # Check to see if odd numbers in 3 ~ sqrt(n) are prime factors
+    while p*p <= n:
+        if n % p == 0:
+            while n % p == 0:
+                n /= p
+                result.append(3)
+        p += 2
+
+    if n > 2:
+        # What is left in n must also be a prime factor if n > 2
+        result.append(int(n))
+
+    return result
+
+
+def primeSieve(n):
+    primes = [True] * (n+1)
+    primes[0] = False
+    primes[1] = False
+
+    for i in range(2, int(n**0.5)+1):
+        if primes[i]:
+            for j in range(i*i, n+1, i):
+                primes[j] = False
+
+    return [i for i in range(2, n+1) if primes[i]]
+
+
+def findSmallestProduct(*n):
+    # maxN = max(n)
+
+    primes = primeSieve(100)
+
     answer = []
-
-    # print("primeSumFirstRow", primeSumFirstRow)
-
-    for sum in sums:
-        left_border = 0
-        right_border = binarySearchEQ(primeSumFirstRow, sum)
-        primeSumCurrentRow = primeSumFirstRow
-
-        row = 0  # 현재 탐색하는 행
-        while left_border < right_border:  # 만약 이 조건을 만족한다면, 아래를 반복하며 표의 각 row 차례로 탐색
-            # print(left_border, right_border)
-            # right_border -> left_border 방향으로
-            for i in range(right_border, left_border-1, -1):
-                if (primeArr[primeSumCurrentRow[i]]):  # 소수
-                    find = (primeSumCurrentRow[i], i+1)  # sum,길이 저장
-                    left_border = i+1
-                    break  # 다음 row 살핌
-            # nextRow update
-            row += 1
-            primeSumCurrentRow = primeSumCurrentRow[1:]
-            for i in range(len(primeSumCurrentRow)):
-                primeSumCurrentRow[i] = primeSumCurrentRow[i]-result[row-1]
-            # print("row", row)
-            # print("nextRow", primeSumCurrentRow)
-            right_border = binarySearchEQ(primeSumCurrentRow, sum)
-
-        answer.append(find)
-    # print(answer)
-
+    for number in n:
+        product = 1
+        for prime in primes:
+            product *= prime
+            if product > number:
+                answer.append(product // prime)
+                break
     return answer
 
 
-findLongestConsecutivePrimeSum(500, 600, 700, 800, 900, 1000)
-# findLongestConsecutivePrimeSum(500, 600, 700, 800, 900, 1000) == [(499, 17), (499, 17), (499, 17), (499, 17), (857, 19), (953, 21)]:
+# if findSmallestProduct(2, 3, 4, 5, 6, 7, 8, 9, 10, 11) == [2, 2, 2, 2, 6, 6, 6, 6, 6, 6]:
+#     print("P ", end='')
+# else:
+#     print("F ", end='')
+#     correct = False
+
+# if findSmallestProduct(10000000, 1000000000) == [9699690, 223092870]:
+#     print("P ", end='')
+# else:
+#     print("F ", end='')
+#     correct = False
+
+
+def totientMinimum(*Ns):
+    answer = []
+    for n in Ns:
+        for i in range(n, 1, -1):
+            if primeFactorization(i) == [i]:
+                answer.append(i)
+                break
+    return answer
+
+
+if totientMinimum(2, 3, 4, 5, 6, 7, 8, 9, 10, 11) == [2, 3, 3, 5, 5, 7, 7, 7, 7, 11]:
+    print("P ", end='')
+else:
+    print("F ", end='')
+    correct = False
+if totientMinimum(50, 500, 1000) == [47, 499, 997]:
+    print("P ", end='')
+else:
+    print("F ", end='')
+    correct = False
