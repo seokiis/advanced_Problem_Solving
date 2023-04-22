@@ -104,6 +104,7 @@ def primeSieve(n):
 
 
 def totientMaximum3(*Ns):
+    # 소수만 모아놓은 리스트
     primes = primeSieve(100)
 
     answer = []

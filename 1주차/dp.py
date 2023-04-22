@@ -24,13 +24,13 @@ def knapsack(n, loads):
     k = len(loads)
     dp = [0]*(n+1)
 
+    # dp를 사용해서 작은 수 재활용하기 위해 1부터 돌림
+    # 쌓아가는 형식
     for i in range(1, n+1):
         for j in range(k):
-            size = loads[j][1]
-            value = loads[j][2]
-            if (i < size):
-                continue
-            dp[i] = max(dp[i], dp[i-size]+value)
+            size, value = loads[j][1], loads[j][2]
+            if i >= size:
+                dp[i] = max(dp[i], dp[i-size]+value)
     return dp[n]
 
 

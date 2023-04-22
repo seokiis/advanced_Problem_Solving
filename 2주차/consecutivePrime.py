@@ -46,25 +46,21 @@ def findLongestConsecutivePrimeSum(*sums):
     # 소수 구하기 [true,false]로 이루어짐. **index 0부터임**
     primeArr = findPrimes(maxSum)
 
-    # print("primeArr:", primeArr)
-
     # true만 모음.
     result = []
     for i in range(2, len(primeArr)):
         if primeArr[i]:
             result.append(i)
 
-    # print("result", result)
-
+    # 첫번째 행을 구함
     primeSumFirstRow = []
     sum = 0
     for p in range(maxSum):
         if primeArr[p]:
             sum += p
             primeSumFirstRow.append(sum)
-    answer = []
 
-    # print("primeSumFirstRow", primeSumFirstRow)
+    answer = []
 
     for sum in sums:
         left_border = 0
@@ -73,7 +69,6 @@ def findLongestConsecutivePrimeSum(*sums):
 
         row = 0  # 현재 탐색하는 행
         while left_border < right_border:  # 만약 이 조건을 만족한다면, 아래를 반복하며 표의 각 row 차례로 탐색
-            # print(left_border, right_border)
             # right_border -> left_border 방향으로
             for i in range(right_border, left_border-1, -1):
                 if (primeArr[primeSumCurrentRow[i]]):  # 소수
@@ -85,12 +80,10 @@ def findLongestConsecutivePrimeSum(*sums):
             primeSumCurrentRow = primeSumCurrentRow[1:]
             for i in range(len(primeSumCurrentRow)):
                 primeSumCurrentRow[i] = primeSumCurrentRow[i]-result[row-1]
-            # print("row", row)
-            # print("nextRow", primeSumCurrentRow)
+
             right_border = binarySearchEQ(primeSumCurrentRow, sum)
 
         answer.append(find)
-    # print(answer)
 
     return answer
 
